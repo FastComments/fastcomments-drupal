@@ -1,0 +1,5 @@
+fastcomments.settings:
+  title: 'FastComments settings'
+  base_route_name: fastcomments.settings
+  names:
+    - fastcomments.settings

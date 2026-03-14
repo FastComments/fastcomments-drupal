@@ -8,7 +8,35 @@
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
+
+/**
+ * Implements hook_help().
+ */
+function fastcomments_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.fastcomments':
+      $output = '<h2>' . t('About') . '</h2>';
+      $output .= '<p>' . t('The FastComments module integrates the <a href="https://fastcomments.com" target="_blank">FastComments</a> commenting widget with your Drupal site, replacing native comments with a fast, real-time commenting system.') . '</p>';
+      $output .= '<h2>' . t('Setup') . '</h2>';
+      $output .= '<ol>';
+      $output .= '<li>' . t('Go to <a href=":settings">FastComments settings</a> and enter your Tenant ID.', [':settings' => '/admin/config/content/fastcomments']) . '</li>';
+      $output .= '<li>' . t('Add the "FastComments comment" field to your content types via Structure &gt; Content types &gt; Manage fields.') . '</li>';
+      $output .= '<li>' . t('Optionally, enable SSO to sync Drupal user accounts with FastComments.') . '</li>';
+      $output .= '</ol>';
+      $output .= '<h2>' . t('Widget blocks') . '</h2>';
+      $output .= '<p>' . t('Several widget blocks are available under Structure &gt; Block layout:') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('<strong>FastComments Widget</strong> &ndash; The main commenting widget. Attaches to the current page entity.') . '</li>';
+      $output .= '<li>' . t('<strong>FastComments Live Chat</strong> &ndash; A real-time streaming chat widget.') . '</li>';
+      $output .= '<li>' . t('<strong>FastComments Collab Chat</strong> &ndash; Text-selection annotation and discussion.') . '</li>';
+      $output .= '<li>' . t('<strong>FastComments Image Chat</strong> &ndash; Coordinate-based annotation on images.') . '</li>';
+      $output .= '<li>' . t('<strong>FastComments Recent Comments</strong> &ndash; Displays recent comments across your site.') . '</li>';
+      $output .= '</ul>';
+      return $output;
+  }
+}
 
 /**
  * Implements hook_theme().
