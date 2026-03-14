@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install and requirements for the FastComments module.
+ * Install, update, and requirements for the FastComments module.
  */
 
 /**
@@ -34,3 +34,4 @@ function fastcomments_requirements($phase) {
 
   return $requirements;
 }
+

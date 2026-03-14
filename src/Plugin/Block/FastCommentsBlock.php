@@ -4,10 +4,10 @@ namespace Drupal\fastcomments\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\fastcomments\Service\FastCommentsWidgetRenderer;
-use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -83,19 +83,26 @@ class FastCommentsBlock extends BlockBase implements ContainerFactoryPluginInter
       return [];
     }
 
-    $node = $this->routeMatch->getParameter('node');
+    // Look for any content entity on the current route.
+    $entity = NULL;
+    foreach ($this->routeMatch->getParameters() as $parameter) {
+      if ($parameter instanceof ContentEntityInterface) {
+        $entity = $parameter;
+        break;
+      }
+    }
 
-    if ($node instanceof NodeInterface) {
-      // Skip if this node's content type already has auto-injection enabled.
-      $enabled_types = $config->get('enabled_content_types') ?: [];
-      if (in_array($node->bundle(), $enabled_types, TRUE)) {
+    if ($entity instanceof ContentEntityInterface) {
+      // If the entity has a fastcomments_comment field, the formatter handles
+      // rendering — skip the block to avoid duplicate widgets.
+      if ($entity->hasField('fastcomments_comment')) {
         return [];
       }
 
-      return $this->widgetRenderer->buildWidgetRenderArray($node);
+      return $this->widgetRenderer->buildWidgetRenderArray($entity);
     }
 
-    // Fallback for non-node pages: use URL path hash as urlId.
+    // Fallback for non-entity pages: use URL path hash as urlId.
     $current_path = \Drupal::service('path.current')->getPath();
     $url_id = 'drupal-path-' . md5($current_path);
     $request = \Drupal::request();

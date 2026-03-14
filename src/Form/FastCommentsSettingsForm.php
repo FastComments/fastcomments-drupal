@@ -4,7 +4,6 @@ namespace Drupal\fastcomments\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\NodeType;
 
 /**
  * Configuration form for FastComments settings.
@@ -87,18 +86,9 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
-    $node_types = NodeType::loadMultiple();
-    $options = [];
-    foreach ($node_types as $type) {
-      $options[$type->id()] = $type->label();
-    }
-
-    $form['enabled_content_types'] = [
-      '#type' => 'checkboxes',
-      '#title' => $this->t('Enabled Content Types'),
-      '#description' => $this->t('Select which content types should display the FastComments widget. Native Drupal comments will be hidden on these content types.'),
-      '#options' => $options,
-      '#default_value' => $config->get('enabled_content_types') ?: [],
+    $form['field_setup_help'] = [
+      '#type' => 'markup',
+      '#markup' => '<p>' . $this->t('To enable FastComments on a content type, add the "FastComments comment" field via Structure &gt; Content types &gt; [type] &gt; Manage fields.') . '</p>',
     ];
 
     return parent::buildForm($form, $form_state);
@@ -119,8 +109,6 @@ class FastCommentsSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $enabled_types = array_values(array_filter($form_state->getValue('enabled_content_types')));
-
     $this->config('fastcomments.settings')
       ->set('tenant_id', $form_state->getValue('tenant_id'))
       ->set('api_secret', $form_state->getValue('api_secret'))
@@ -128,7 +116,6 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       ->set('commenting_style', $form_state->getValue('commenting_style'))
       ->set('cdn_url', $form_state->getValue('cdn_url'))
       ->set('site_url', $form_state->getValue('site_url'))
-      ->set('enabled_content_types', $enabled_types)
       ->save();
 
     parent::submitForm($form, $form_state);
