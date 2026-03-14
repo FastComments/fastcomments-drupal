@@ -101,23 +101,29 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
       $noscript_url = $site_url . '/ssr/comments?' . http_build_query($noscript_params);
     }
 
-    // Determine which CDN scripts to load.
-    $scripts = $this->getScriptsForStyle($commenting_style, $cdn_url);
-
     $widget_element_id = 'fastcomments-widget-' . md5($commenting_style . '-' . $identifier);
 
     $build = [
       '#theme' => 'fastcomments_widget',
-      '#config_json' => $config_json,
       '#commenting_style' => $commenting_style,
-      '#cdn_url' => $cdn_url,
-      '#url_id' => $identifier,
       '#widget_element_id' => $widget_element_id,
       '#noscript_url' => $noscript_url,
       '#show_noscript' => $show_noscript,
-      '#scripts' => $scripts,
       '#attached' => [
-        'library' => ['fastcomments/styling'],
+        'library' => [
+          'fastcomments/styling',
+          'fastcomments/widget',
+        ],
+        'drupalSettings' => [
+          'fastcommentsWidgets' => [
+            $widget_element_id => [
+              'commentingStyle' => $commenting_style,
+              'config' => $widget_config,
+              'elementId' => $widget_element_id,
+              'cdnUrl' => $cdn_url,
+            ],
+          ],
+        ],
       ],
       '#cache' => [
         'contexts' => ['user'],

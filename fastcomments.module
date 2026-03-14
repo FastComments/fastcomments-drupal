@@ -46,14 +46,10 @@ function fastcomments_theme() {
   return [
     'fastcomments_widget' => [
       'variables' => [
-        'config_json' => '',
         'commenting_style' => 'comments',
-        'cdn_url' => 'https://cdn.fastcomments.com',
-        'url_id' => '',
         'widget_element_id' => 'fastcomments-widget',
         'noscript_url' => '',
         'show_noscript' => TRUE,
-        'scripts' => [],
       ],
       'template' => 'fastcomments-widget',
     ],

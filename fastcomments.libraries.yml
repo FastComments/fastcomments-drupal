@@ -4,6 +4,15 @@ styling:
     component:
       css/fastcomments.css: {}
 
+widget:
+  version: 1.0
+  js:
+    js/fastcomments-widget.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+
 comment_count:
   version: 1.0
   js:
