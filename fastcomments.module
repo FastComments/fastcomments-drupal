@@ -33,6 +33,7 @@ function fastcomments_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<li>' . t('<strong>FastComments Collab Chat</strong> &ndash; Text-selection annotation and discussion.') . '</li>';
       $output .= '<li>' . t('<strong>FastComments Image Chat</strong> &ndash; Coordinate-based annotation on images.') . '</li>';
       $output .= '<li>' . t('<strong>FastComments Recent Comments</strong> &ndash; Displays recent comments across your site.') . '</li>';
+      $output .= '<li>' . t('<strong>FastComments Top Pages</strong> &ndash; Shows pages with the most comments.') . '</li>';
       $output .= '</ul>';
       return $output;
   }
