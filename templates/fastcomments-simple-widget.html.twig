@@ -1,0 +1,29 @@
+{#
+/**
+ * @file
+ * Simple FastComments widget template for standalone widgets.
+ *
+ * Variables:
+ * - widget_element_id: Unique DOM element ID for this widget instance.
+ * - config_json: JSON-encoded widget configuration.
+ * - init_function: The global JS function name to call (e.g. FastCommentsRecentComments).
+ */
+#}
+<div class="fastcomments-widget-wrapper">
+  <div id="{{ widget_element_id }}"></div>
+  <script>
+    (function() {
+      var el = document.getElementById('{{ widget_element_id }}');
+      var config = {{ config_json|raw }};
+      var attempts = 0;
+      function tryInit() {
+        if (window['{{ init_function }}']) {
+          window['{{ init_function }}'](el, config);
+        } else if (++attempts < 200) {
+          setTimeout(tryInit, attempts < 50 ? 50 : 500);
+        }
+      }
+      tryInit();
+    })();
+  </script>
+</div>
