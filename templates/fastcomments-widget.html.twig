@@ -11,9 +11,13 @@
  * - widget_element_id: Unique DOM element ID for this widget instance.
  * - noscript_url: The SSR fallback URL for noscript.
  * - show_noscript: Whether to show the noscript fallback.
+ * - scripts: Array of CDN script URLs to load.
  */
 #}
 <div class="fastcomments-widget-wrapper">
+  {% for script_url in scripts %}
+    <script src="{{ script_url }}"></script>
+  {% endfor %}
   {% if commenting_style != 'collabchat' %}
     <div id="{{ widget_element_id }}"></div>
   {% endif %}

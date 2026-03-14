@@ -101,11 +101,21 @@ class FastCommentsApiClient {
       }
 
       $data = json_decode((string) $response->getBody(), TRUE);
-      if (!is_array($data) || empty($data['id'])) {
+      if (!is_array($data)) {
         return NULL;
       }
 
-      return $data;
+      // The API nests the page data under a 'page' key.
+      if (!empty($data['page']['id'])) {
+        return $data['page'];
+      }
+
+      // Fallback: check if 'id' is at root level.
+      if (!empty($data['id'])) {
+        return $data;
+      }
+
+      return NULL;
     }
     catch (GuzzleException $e) {
       $this->logger->warning('FastComments API error fetching page by urlId @urlId: @message', [
