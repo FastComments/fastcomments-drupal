@@ -103,3 +103,84 @@ function fastcomments_entity_view(array &$build, EntityInterface $entity, Entity
     ],
   ];
 }
+
+/**
+ * Implements hook_entity_update().
+ */
+function fastcomments_entity_update(EntityInterface $entity): void {
+  if (!$entity instanceof ContentEntityInterface) {
+    return;
+  }
+
+  $values = FastCommentsItem::getFieldValues($entity);
+  if ($values === NULL) {
+    return;
+  }
+
+  $config = \Drupal::config('fastcomments.settings');
+  if (empty($config->get('api_secret'))) {
+    return;
+  }
+
+  $identifier = $values['identifier'];
+  $urlId = !empty($identifier) ? $identifier : 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
+
+  /** @var \Drupal\fastcomments\Service\FastCommentsApiClient $apiClient */
+  $apiClient = \Drupal::service('fastcomments.api_client');
+  $page = $apiClient->getPageByUrlId($urlId);
+  if ($page === NULL) {
+    return;
+  }
+
+  $data = ['title' => $entity->label()];
+  if ($entity->hasLinkTemplate('canonical')) {
+    $data['url'] = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+  }
+
+  $apiClient->updatePage($page['id'], $data);
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function fastcomments_entity_delete(EntityInterface $entity): void {
+  if (!$entity instanceof ContentEntityInterface) {
+    return;
+  }
+
+  $values = FastCommentsItem::getFieldValues($entity);
+  if ($values === NULL) {
+    return;
+  }
+
+  $config = \Drupal::config('fastcomments.settings');
+  if (empty($config->get('api_secret'))) {
+    return;
+  }
+
+  $identifier = $values['identifier'];
+  $urlId = !empty($identifier) ? $identifier : 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
+
+  /** @var \Drupal\fastcomments\Service\FastCommentsApiClient $apiClient */
+  $apiClient = \Drupal::service('fastcomments.api_client');
+  $page = $apiClient->getPageByUrlId($urlId);
+  if ($page === NULL) {
+    return;
+  }
+
+  $apiClient->deletePage($page['id']);
+}
+
+/**
+ * Implements hook_mail().
+ */
+function fastcomments_mail($key, &$message, $params) {
+  if ($key === 'new_comment') {
+    $message['subject'] = t('New comment on @title', ['@title' => $params['entity_title']]);
+    $message['body'][] = t('@name left a comment:', ['@name' => $params['commenter_name']]);
+    $message['body'][] = $params['comment_text'];
+    if (!empty($params['entity_url'])) {
+      $message['body'][] = t('View: @url', ['@url' => $params['entity_url']]);
+    }
+  }
+}

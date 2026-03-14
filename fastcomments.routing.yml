@@ -5,3 +5,11 @@ fastcomments.settings:
     _title: 'FastComments Settings'
   requirements:
     _permission: 'administer fastcomments'
+
+fastcomments.webhook:
+  path: '/fastcomments/webhook'
+  defaults:
+    _controller: '\Drupal\fastcomments\Controller\FastCommentsWebhookController::handleWebhook'
+  methods: [PUT, DELETE]
+  requirements:
+    _access: 'TRUE'

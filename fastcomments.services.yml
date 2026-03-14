@@ -1,7 +1,13 @@
 services:
+  logger.channel.fastcomments:
+    parent: logger.channel_base
+    arguments: ['fastcomments']
   fastcomments.sso_service:
     class: Drupal\fastcomments\Service\FastCommentsSsoService
     arguments: ['@current_user', '@config.factory', '@entity_type.manager', '@file_url_generator']
   fastcomments.widget_renderer:
     class: Drupal\fastcomments\Service\FastCommentsWidgetRenderer
     arguments: ['@config.factory', '@fastcomments.sso_service']
+  fastcomments.api_client:
+    class: Drupal\fastcomments\Service\FastCommentsApiClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.fastcomments']
