@@ -2,6 +2,7 @@
 
 namespace Drupal\fastcomments\Plugin\Field\FieldType;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
@@ -62,6 +63,62 @@ class FastCommentsItem extends FieldItemBase {
   public function isEmpty(): bool {
     $status = $this->get('status')->getValue();
     return $status === NULL || $status === '';
+  }
+
+  /**
+   * Finds the first field of type 'fastcomments_comment' on an entity.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity to inspect.
+   *
+   * @return string|null
+   *   The field name, or NULL if none found.
+   */
+  public static function getFieldName(ContentEntityInterface $entity): ?string {
+    foreach ($entity->getFieldDefinitions() as $field_name => $definition) {
+      if ($definition->getType() === 'fastcomments_comment') {
+        return $field_name;
+      }
+    }
+    return NULL;
+  }
+
+  /**
+   * Reads field values with default-value fallback.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity to read from.
+   *
+   * @return array|null
+   *   Array with 'field_name', 'status', and 'identifier' keys, or NULL.
+   */
+  public static function getFieldValues(ContentEntityInterface $entity): ?array {
+    $field_name = static::getFieldName($entity);
+    if ($field_name === NULL) {
+      return NULL;
+    }
+
+    $items = $entity->get($field_name);
+    $status = 1;
+    $identifier = '';
+
+    if (!$items->isEmpty()) {
+      $item = $items->first();
+      $status = (int) $item->status;
+      $identifier = $item->identifier ?? '';
+    }
+    else {
+      $defaults = $items->getFieldDefinition()->getDefaultValueLiteral();
+      if (!empty($defaults[0]['status'])) {
+        $status = (int) $defaults[0]['status'];
+      }
+    }
+
+    return [
+      'field_name' => $field_name,
+      'status' => $status,
+      'identifier' => $identifier,
+    ];
   }
 
 }

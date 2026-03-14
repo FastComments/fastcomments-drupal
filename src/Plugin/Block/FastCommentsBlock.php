@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
 use Drupal\fastcomments\Service\FastCommentsWidgetRenderer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -93,9 +94,9 @@ class FastCommentsBlock extends BlockBase implements ContainerFactoryPluginInter
     }
 
     if ($entity instanceof ContentEntityInterface) {
-      // If the entity has a fastcomments_comment field, the formatter handles
-      // rendering — skip the block to avoid duplicate widgets.
-      if ($entity->hasField('fastcomments_comment')) {
+      // If the entity has a fastcomments_comment field (regardless of name),
+      // the formatter handles rendering — skip the block to avoid duplicates.
+      if (FastCommentsItem::getFieldName($entity) !== null) {
         return [];
       }
 

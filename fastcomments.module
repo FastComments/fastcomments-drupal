@@ -5,6 +5,11 @@
  * Hook implementations for the FastComments module.
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
+
 /**
  * Implements hook_theme().
  */
@@ -20,6 +25,81 @@ function fastcomments_theme() {
         'show_noscript' => TRUE,
       ],
       'template' => 'fastcomments-widget',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function fastcomments_entity_extra_field_info(): array {
+  $extra = [];
+
+  $field_map = \Drupal::service('entity_field.manager')->getFieldMap();
+  foreach ($field_map as $entity_type_id => $fields) {
+    foreach ($fields as $field_name => $field_info) {
+      if ($field_info['type'] !== 'fastcomments_comment') {
+        continue;
+      }
+      foreach ($field_info['bundles'] as $bundle) {
+        $extra[$entity_type_id][$bundle]['display']['fastcomments_comment_count'] = [
+          'label' => t('FastComments comment count'),
+          'description' => t('Displays the comment count from FastComments.'),
+          'weight' => 100,
+          'visible' => FALSE,
+        ];
+      }
+    }
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function fastcomments_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
+  if (!$display->getComponent('fastcomments_comment_count')) {
+    return;
+  }
+
+  if (!$entity instanceof ContentEntityInterface) {
+    return;
+  }
+
+  $values = FastCommentsItem::getFieldValues($entity);
+  if ($values === NULL || $values['status'] !== 1) {
+    return;
+  }
+
+  $identifier = $values['identifier'];
+  if (empty($identifier)) {
+    $identifier = 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
+  }
+
+  $config = \Drupal::config('fastcomments.settings');
+  $tenant_id = $config->get('tenant_id');
+  if (empty($tenant_id)) {
+    return;
+  }
+
+  $cdn_url = rtrim($config->get('cdn_url') ?: 'https://cdn.fastcomments.com', '/');
+
+  $build['fastcomments_comment_count'] = [
+    '#type' => 'html_tag',
+    '#tag' => 'span',
+    '#attributes' => [
+      'class' => ['fast-comments-count'],
+      'data-fast-comments-url-id' => $identifier,
+    ],
+    '#attached' => [
+      'library' => ['fastcomments/comment_count'],
+      'drupalSettings' => [
+        'fastcomments' => [
+          'tenantId' => $tenant_id,
+          'cdnUrl' => $cdn_url,
+        ],
+      ],
     ],
   ];
 }
