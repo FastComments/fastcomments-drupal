@@ -34,7 +34,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
     $form['tenant_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Tenant ID'),
-      '#description' => $this->t('Your FastComments Tenant ID. Find this in your FastComments dashboard under My Account.'),
+      '#description' => $this->t('Your FastComments Tenant ID. Find this under <a href="https://fastcomments.com/auth/my-account/api" target="_blank">Settings &gt; API/SSO</a> (or <a href="https://eu.fastcomments.com/auth/my-account/api" target="_blank">EU</a>).'),
       '#default_value' => $config->get('tenant_id'),
       '#required' => TRUE,
     ];
@@ -42,7 +42,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
     $form['api_secret'] = [
       '#type' => 'textfield',
       '#title' => $this->t('API Secret'),
-      '#description' => $this->t('Your FastComments API Secret. Required when SSO Mode is set to "Secure". Find this in your FastComments dashboard under My Account.'),
+      '#description' => $this->t('Your FastComments API Secret. Required for Secure SSO, webhook verification, and page sync. Find this under <a href="https://fastcomments.com/auth/my-account/api" target="_blank">Settings &gt; API/SSO</a> (or <a href="https://eu.fastcomments.com/auth/my-account/api" target="_blank">EU</a>).'),
       '#default_value' => $config->get('api_secret'),
     ];
 
@@ -63,7 +63,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Commenting Style'),
       '#description' => $this->t('The type of commenting widget to display.'),
       '#options' => [
-        'comments' => $this->t('Comments'),
+        'comments' => $this->t('Live Comments'),
         'livechat' => $this->t('Streaming Chat'),
         'collabchat' => $this->t('Collab Chat'),
         'collabchat_comments' => $this->t('Collab Chat + Comments'),
@@ -102,7 +102,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
 
     $form['field_setup_help'] = [
       '#type' => 'markup',
-      '#markup' => '<p>' . $this->t('To enable FastComments on a content type, add the "FastComments comment" field via Structure &gt; Content types &gt; [type] &gt; Manage fields.') . '</p>',
+      '#markup' => '<p>' . $this->t('To enable FastComments on a content type, add the "FastComments" field via Structure &gt; Content types &gt; [type] &gt; Manage fields.') . '</p>',
     ];
 
     return parent::buildForm($form, $form_state);

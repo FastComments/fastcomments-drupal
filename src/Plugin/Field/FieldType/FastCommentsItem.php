@@ -12,7 +12,7 @@ use Drupal\Core\TypedData\DataDefinition;
  *
  * @FieldType(
  *   id = "fastcomments_comment",
- *   label = @Translation("FastComments comment"),
+ *   label = @Translation("FastComments"),
  *   description = @Translation("Adds a FastComments commenting widget to an entity."),
  *   default_widget = "fastcomments_comment",
  *   default_formatter = "fastcomments_comment",

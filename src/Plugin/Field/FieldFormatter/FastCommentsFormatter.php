@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @FieldFormatter(
  *   id = "fastcomments_comment",
- *   label = @Translation("FastComments comment"),
+ *   label = @Translation("FastComments Widget"),
  *   field_types = {"fastcomments_comment"},
  * )
  */
@@ -74,6 +75,63 @@ class FastCommentsFormatter extends FormatterBase implements ContainerFactoryPlu
   /**
    * {@inheritdoc}
    */
+  public static function defaultSettings(): array {
+    return [
+      'commenting_style' => '',
+    ] + parent::defaultSettings();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsForm(array $form, FormStateInterface $form_state): array {
+    $elements = parent::settingsForm($form, $form_state);
+
+    $globalStyle = $this->configFactory->get('fastcomments.settings')->get('commenting_style') ?: 'comments';
+    $styleLabels = [
+      'comments' => $this->t('Comments'),
+      'livechat' => $this->t('Streaming Chat'),
+      'collabchat' => $this->t('Collab Chat'),
+      'collabchat_comments' => $this->t('Collab Chat + Comments'),
+    ];
+    $globalLabel = $styleLabels[$globalStyle] ?? $globalStyle;
+
+    $elements['commenting_style'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Commenting style'),
+      '#options' => [
+        '' => $this->t('Global default (@style)', ['@style' => $globalLabel]),
+      ] + $styleLabels,
+      '#default_value' => $this->getSetting('commenting_style'),
+    ];
+
+    return $elements;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function settingsSummary(): array {
+    $summary = [];
+    $style = $this->getSetting('commenting_style');
+    if ($style) {
+      $labels = [
+        'comments' => $this->t('Comments'),
+        'livechat' => $this->t('Streaming Chat'),
+        'collabchat' => $this->t('Collab Chat'),
+        'collabchat_comments' => $this->t('Collab Chat + Comments'),
+      ];
+      $summary[] = $this->t('Style: @style', ['@style' => $labels[$style] ?? $style]);
+    }
+    else {
+      $summary[] = $this->t('Style: Global default');
+    }
+    return $summary;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function viewElements(FieldItemListInterface $items, $langcode): array {
     $elements = [];
     $entity = $items->getEntity();
@@ -113,8 +171,12 @@ class FastCommentsFormatter extends FormatterBase implements ContainerFactoryPlu
       $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
     }
 
-    $config = $this->configFactory->get('fastcomments.settings');
-    $commenting_style = $config->get('commenting_style') ?: 'comments';
+    // Use formatter setting if set, otherwise fall back to global config.
+    $commenting_style = $this->getSetting('commenting_style');
+    if (empty($commenting_style)) {
+      $config = $this->configFactory->get('fastcomments.settings');
+      $commenting_style = $config->get('commenting_style') ?: 'comments';
+    }
     $title = $entity->label() ?: '';
 
     $elements[0] = [

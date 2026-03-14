@@ -22,7 +22,7 @@ function fastcomments_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<h2>' . t('Setup') . '</h2>';
       $output .= '<ol>';
       $output .= '<li>' . t('Go to <a href=":settings">FastComments settings</a> and enter your Tenant ID.', [':settings' => '/admin/config/content/fastcomments']) . '</li>';
-      $output .= '<li>' . t('Add the "FastComments comment" field to your content types via Structure &gt; Content types &gt; Manage fields.') . '</li>';
+      $output .= '<li>' . t('Add the "FastComments" field to your content types via Structure &gt; Content types &gt; Manage fields.') . '</li>';
       $output .= '<li>' . t('Optionally, enable SSO to sync Drupal user accounts with FastComments.') . '</li>';
       $output .= '</ol>';
       $output .= '<h2>' . t('Widget blocks') . '</h2>';
@@ -78,7 +78,7 @@ function fastcomments_entity_extra_field_info(): array {
       }
       foreach ($field_info['bundles'] as $bundle) {
         $extra[$entity_type_id][$bundle]['display']['fastcomments_comment_count'] = [
-          'label' => t('FastComments comment count'),
+          'label' => t('FastComments Comment Count'),
           'description' => t('Displays the comment count from FastComments.'),
           'weight' => 100,
           'visible' => FALSE,

@@ -36,7 +36,7 @@ function fastcomments_views_data_alter(array &$data): void {
     }
 
     $data[$base_table]['fastcomments_count'] = [
-      'title' => t('FastComments comment count'),
+      'title' => t('FastComments Comment Count'),
       'help' => t('Displays the comment count from FastComments.'),
       'field' => [
         'id' => 'fastcomments_count',

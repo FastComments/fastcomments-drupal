@@ -186,43 +186,4 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
     ];
   }
 
-  /**
-   * Get the CDN script URLs for a given commenting style.
-   *
-   * @param string $style
-   *   The commenting style.
-   * @param string $cdn_url
-   *   The CDN base URL.
-   *
-   * @return string[]
-   *   Array of script URLs.
-   */
-  protected function getScriptsForStyle(string $style, string $cdn_url): array {
-    $scripts = [];
-    switch ($style) {
-      case 'livechat':
-        $scripts[] = $cdn_url . '/js/embed-live-chat.min.js';
-        break;
-
-      case 'collabchat':
-        $scripts[] = $cdn_url . '/js/embed-collab-chat.min.js';
-        break;
-
-      case 'collabchat_comments':
-        $scripts[] = $cdn_url . '/js/embed-v2.min.js';
-        $scripts[] = $cdn_url . '/js/embed-collab-chat.min.js';
-        break;
-
-      case 'imagechat':
-        $scripts[] = $cdn_url . '/js/embed-image-chat.min.js';
-        break;
-
-      case 'comments':
-      default:
-        $scripts[] = $cdn_url . '/js/embed-v2.min.js';
-        break;
-    }
-    return $scripts;
-  }
-
 }
