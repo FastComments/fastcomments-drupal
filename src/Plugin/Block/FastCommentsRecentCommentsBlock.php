@@ -93,9 +93,11 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
     $cdn_url = rtrim($config->get('cdn_url') ?: 'https://cdn.fastcomments.com', '/');
     $count = (int) ($this->configuration['count'] ?? 5);
 
+    $locale = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $widget_config = [
       'tenantId' => $tenant_id,
       'count' => $count,
+      'locale' => $locale,
     ];
     $config_json = json_encode($widget_config, JSON_UNESCAPED_SLASHES);
 

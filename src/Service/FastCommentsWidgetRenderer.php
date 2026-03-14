@@ -69,10 +69,12 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
     }
 
     // Build widget config.
+    $locale = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $widget_config = [
       'tenantId' => $tenant_id,
       'urlId' => $identifier,
       'url' => $url,
+      'locale' => $locale,
     ];
 
     // Add SSO config.
