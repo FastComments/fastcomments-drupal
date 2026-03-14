@@ -1,0 +1,7 @@
+fastcomments.settings:
+  path: '/admin/config/content/fastcomments'
+  defaults:
+    _form: '\Drupal\fastcomments\Form\FastCommentsSettingsForm'
+    _title: 'FastComments Settings'
+  requirements:
+    _permission: 'administer fastcomments'

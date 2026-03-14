@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Install and requirements for the FastComments module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function fastcomments_requirements($phase) {
+  $requirements = [];
+
+  if ($phase === 'runtime') {
+    $config = \Drupal::config('fastcomments.settings');
+    $tenant_id = $config->get('tenant_id');
+
+    $requirements['fastcomments_tenant_id'] = [
+      'title' => t('FastComments'),
+    ];
+
+    if (empty($tenant_id)) {
+      $requirements['fastcomments_tenant_id']['value'] = t('Not configured');
+      $requirements['fastcomments_tenant_id']['description'] = t('FastComments Tenant ID is not set. <a href=":url">Configure FastComments</a> to enable the commenting widget.', [
+        ':url' => \Drupal\Core\Url::fromRoute('fastcomments.settings')->toString(),
+      ]);
+      $requirements['fastcomments_tenant_id']['severity'] = REQUIREMENT_WARNING;
+    }
+    else {
+      $requirements['fastcomments_tenant_id']['value'] = t('Configured (Tenant ID: @id)', ['@id' => $tenant_id]);
+      $requirements['fastcomments_tenant_id']['severity'] = REQUIREMENT_OK;
+    }
+  }
+
+  return $requirements;
+}
