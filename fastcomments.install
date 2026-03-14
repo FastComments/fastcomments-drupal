@@ -36,6 +36,13 @@ function fastcomments_requirements($phase) {
 }
 
 /**
+ * Implements hook_uninstall().
+ */
+function fastcomments_uninstall() {
+  \Drupal::configFactory()->getEditable('fastcomments.settings')->delete();
+}
+
+/**
  * Add email_notifications config for existing installs.
  */
 function fastcomments_update_10001() {
