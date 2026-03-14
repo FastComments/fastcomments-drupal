@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @FieldWidget(
  *   id = "fastcomments_comment",
- *   label = @Translation("FastComments comment"),
+ *   label = @Translation("FastComments Settings"),
  *   field_types = {"fastcomments_comment"},
  * )
  */
