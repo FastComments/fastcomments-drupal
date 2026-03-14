@@ -1,0 +1,5 @@
+fastcomments.settings:
+  title: 'FastComments'
+  description: 'Configure FastComments commenting widget settings.'
+  route_name: fastcomments.settings
+  parent: system.admin_config_content

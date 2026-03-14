@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for the FastComments module.
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function fastcomments_theme() {
+  return [
+    'fastcomments_widget' => [
+      'variables' => [
+        'config_json' => '',
+        'commenting_style' => 'comments',
+        'cdn_url' => 'https://cdn.fastcomments.com',
+        'url_id' => '',
+        'noscript_url' => '',
+        'show_noscript' => TRUE,
+      ],
+      'template' => 'fastcomments-widget',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view_alter() for nodes.
+ */
+function fastcomments_node_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+  // Only act on full view mode.
+  if ($display->getMode() !== 'full') {
+    return;
+  }
+
+  if (!$entity instanceof NodeInterface) {
+    return;
+  }
+
+  $config = \Drupal::config('fastcomments.settings');
+  $enabled_types = $config->get('enabled_content_types') ?: [];
+
+  if (empty($enabled_types) || !in_array($entity->bundle(), $enabled_types, TRUE)) {
+    return;
+  }
+
+  if (empty($config->get('tenant_id'))) {
+    return;
+  }
+
+  // Hide native Drupal comment fields.
+  foreach ($build as $field_name => $field_build) {
+    if (!is_array($field_build) || strpos($field_name, '#') === 0) {
+      continue;
+    }
+    if (isset($field_build['#field_type']) && $field_build['#field_type'] === 'comment') {
+      $build[$field_name]['#access'] = FALSE;
+    }
+  }
+
+  // Add the FastComments widget.
+  /** @var \Drupal\fastcomments\Service\FastCommentsWidgetRenderer $renderer */
+  $renderer = \Drupal::service('fastcomments.widget_renderer');
+  $build['fastcomments_widget'] = $renderer->buildWidgetRenderArray($entity);
+  $build['fastcomments_widget']['#weight'] = 100;
+}

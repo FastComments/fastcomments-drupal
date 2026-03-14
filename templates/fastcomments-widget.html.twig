@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * FastComments widget template.
+ *
+ * Variables:
+ * - config_json: JSON-encoded widget configuration.
+ * - commenting_style: The commenting style (comments, livechat, collabchat, collabchat_comments).
+ * - cdn_url: The FastComments CDN URL.
+ * - url_id: The URL ID for deduplication.
+ * - noscript_url: The SSR fallback URL for noscript.
+ * - show_noscript: Whether to show the noscript fallback.
+ */
+#}
+<div class="fastcomments-widget-wrapper">
+  {% if commenting_style != 'collabchat' %}
+    <div id="fastcomments-widget"></div>
+  {% endif %}
+
+  <script>
+    (function() {
+      if (!window.fcInitializedById) {
+        window.fcInitializedById = {};
+      }
+      var urlId = {{ url_id|json_encode|raw }};
+      if (window.fcInitializedById[urlId]) {
+        return;
+      }
+      window.fcInitializedById[urlId] = true;
+      var attempts = 0;
+      var config = {{ config_json|raw }};
+
+      function attemptToLoad() {
+        attempts++;
+        if (attempts > 200) { return; }
+
+        {% if commenting_style == 'comments' %}
+          var widgetTarget = document.getElementById('fastcomments-widget');
+          if (window.FastCommentsUI && widgetTarget) {
+            window.FastCommentsUI(widgetTarget, config);
+            return;
+          }
+        {% elseif commenting_style == 'livechat' %}
+          var widgetTarget = document.getElementById('fastcomments-widget');
+          if (window.FastCommentsLiveChat && widgetTarget) {
+            window.FastCommentsLiveChat(widgetTarget, config);
+            return;
+          }
+        {% elseif commenting_style == 'collabchat' %}
+          var mainContent = document.querySelector('[role="main"]') || document.querySelector('main') || document.getElementById('main-content');
+          if (window.FastCommentsCollabChat && mainContent) {
+            var noOverflows = mainContent.querySelectorAll('.no-overflow');
+            for (var i = 0; i < noOverflows.length; i++) {
+              noOverflows[i].classList.remove('no-overflow');
+            }
+            mainContent.classList.remove('no-overflow');
+            window.FastCommentsCollabChat(mainContent, config);
+            return;
+          }
+        {% elseif commenting_style == 'collabchat_comments' %}
+          var widgetTarget = document.getElementById('fastcomments-widget');
+          var mainContent = document.querySelector('[role="main"]') || document.querySelector('main') || document.getElementById('main-content');
+          if (window.FastCommentsUI && widgetTarget && window.FastCommentsCollabChat && mainContent) {
+            var noOverflows = mainContent.querySelectorAll('.no-overflow');
+            for (var i = 0; i < noOverflows.length; i++) {
+              noOverflows[i].classList.remove('no-overflow');
+            }
+            mainContent.classList.remove('no-overflow');
+            window.FastCommentsCollabChat(mainContent, config);
+            window.FastCommentsUI(widgetTarget, config);
+            return;
+          }
+        {% endif %}
+
+        setTimeout(attemptToLoad, attempts > 50 ? 500 : 50);
+      }
+      attemptToLoad();
+    })();
+  </script>
+
+  {% if show_noscript and noscript_url %}
+    <noscript>
+      <iframe
+        src="{{ noscript_url }}"
+        horizontalscrolling="no"
+        allowtransparency="true"
+        frameborder="0"
+        title="FastComments"
+        width="100%"
+        height="1500px"
+        style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important;"
+      ></iframe>
+    </noscript>
+  {% endif %}
+</div>

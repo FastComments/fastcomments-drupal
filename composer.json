@@ -1,0 +1,14 @@
+{
+  "name": "fastcomments/fastcomments",
+  "description": "Integrates the FastComments commenting widget with Drupal, replacing native comments with a fast, real-time commenting system.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://fastcomments.com",
+  "support": {
+    "issues": "https://github.com/FastComments/fastcomments-drupal/issues",
+    "source": "https://github.com/FastComments/fastcomments-drupal"
+  },
+  "require": {
+    "drupal/core": "^10 || ^11"
+  }
+}

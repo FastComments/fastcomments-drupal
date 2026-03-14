@@ -1,0 +1,4 @@
+administer fastcomments:
+  title: 'Administer FastComments'
+  description: 'Configure FastComments settings including tenant ID, SSO, and commenting style.'
+  restrict access: true

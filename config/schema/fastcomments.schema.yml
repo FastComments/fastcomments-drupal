@@ -1,0 +1,28 @@
+fastcomments.settings:
+  type: config_object
+  label: 'FastComments settings'
+  mapping:
+    tenant_id:
+      type: string
+      label: 'Tenant ID'
+    api_secret:
+      type: string
+      label: 'API Secret'
+    sso_mode:
+      type: string
+      label: 'SSO Mode'
+    commenting_style:
+      type: string
+      label: 'Commenting Style'
+    cdn_url:
+      type: string
+      label: 'CDN URL'
+    site_url:
+      type: string
+      label: 'Site URL'
+    enabled_content_types:
+      type: sequence
+      label: 'Enabled Content Types'
+      sequence:
+        type: string
+        label: 'Content type machine name'
