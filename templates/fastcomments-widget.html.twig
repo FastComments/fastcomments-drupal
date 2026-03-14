@@ -5,16 +5,17 @@
  *
  * Variables:
  * - config_json: JSON-encoded widget configuration.
- * - commenting_style: The commenting style (comments, livechat, collabchat, collabchat_comments).
+ * - commenting_style: The commenting style (comments, livechat, collabchat, collabchat_comments, imagechat).
  * - cdn_url: The FastComments CDN URL.
  * - url_id: The URL ID for deduplication.
+ * - widget_element_id: Unique DOM element ID for this widget instance.
  * - noscript_url: The SSR fallback URL for noscript.
  * - show_noscript: Whether to show the noscript fallback.
  */
 #}
 <div class="fastcomments-widget-wrapper">
   {% if commenting_style != 'collabchat' %}
-    <div id="fastcomments-widget"></div>
+    <div id="{{ widget_element_id }}"></div>
   {% endif %}
 
   <script>
@@ -22,11 +23,11 @@
       if (!window.fcInitializedById) {
         window.fcInitializedById = {};
       }
-      var urlId = {{ url_id|json_encode|raw }};
-      if (window.fcInitializedById[urlId]) {
+      var dedupKey = {{ (commenting_style ~ ':' ~ url_id)|json_encode|raw }};
+      if (window.fcInitializedById[dedupKey]) {
         return;
       }
-      window.fcInitializedById[urlId] = true;
+      window.fcInitializedById[dedupKey] = true;
       var attempts = 0;
       var config = {{ config_json|raw }};
 
@@ -35,15 +36,21 @@
         if (attempts > 200) { return; }
 
         {% if commenting_style == 'comments' %}
-          var widgetTarget = document.getElementById('fastcomments-widget');
+          var widgetTarget = document.getElementById('{{ widget_element_id }}');
           if (window.FastCommentsUI && widgetTarget) {
             window.FastCommentsUI(widgetTarget, config);
             return;
           }
         {% elseif commenting_style == 'livechat' %}
-          var widgetTarget = document.getElementById('fastcomments-widget');
+          var widgetTarget = document.getElementById('{{ widget_element_id }}');
           if (window.FastCommentsLiveChat && widgetTarget) {
             window.FastCommentsLiveChat(widgetTarget, config);
+            return;
+          }
+        {% elseif commenting_style == 'imagechat' %}
+          var widgetTarget = document.getElementById('{{ widget_element_id }}');
+          if (window.FastCommentsImageChat && widgetTarget) {
+            window.FastCommentsImageChat(widgetTarget, config);
             return;
           }
         {% elseif commenting_style == 'collabchat' %}
@@ -58,7 +65,7 @@
             return;
           }
         {% elseif commenting_style == 'collabchat_comments' %}
-          var widgetTarget = document.getElementById('fastcomments-widget');
+          var widgetTarget = document.getElementById('{{ widget_element_id }}');
           var mainContent = document.querySelector('[role="main"]') || document.querySelector('main') || document.getElementById('main-content');
           if (window.FastCommentsUI && widgetTarget && window.FastCommentsCollabChat && mainContent) {
             var noOverflows = mainContent.querySelectorAll('.no-overflow');

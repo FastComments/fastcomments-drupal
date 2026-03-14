@@ -102,12 +102,15 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
     // Determine which CDN scripts to load.
     $scripts = $this->getScriptsForStyle($commenting_style, $cdn_url);
 
+    $widget_element_id = 'fastcomments-widget-' . md5($commenting_style . '-' . $identifier);
+
     $build = [
       '#theme' => 'fastcomments_widget',
       '#config_json' => $config_json,
       '#commenting_style' => $commenting_style,
       '#cdn_url' => $cdn_url,
       '#url_id' => $identifier,
+      '#widget_element_id' => $widget_element_id,
       '#noscript_url' => $noscript_url,
       '#show_noscript' => $show_noscript,
       '#attached' => [
@@ -130,7 +133,7 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
             'src' => $script_url,
           ],
         ],
-        'fastcomments_cdn_script_' . $index,
+        'fastcomments_cdn_script_' . $commenting_style . '_' . $index,
       ];
     }
 
@@ -146,9 +149,9 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
    * @return array
    *   A render element array.
    */
-  public function buildWidgetRenderArray(ContentEntityInterface $entity): array {
+  public function buildWidgetRenderArray(ContentEntityInterface $entity, ?string $styleOverride = NULL): array {
     $config = $this->configFactory->get('fastcomments.settings');
-    $commenting_style = $config->get('commenting_style') ?: 'comments';
+    $commenting_style = $styleOverride ?? ($config->get('commenting_style') ?: 'comments');
 
     $identifier = 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
     $url = '';
@@ -176,9 +179,9 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
    * @return array
    *   A render element array.
    */
-  public function buildWidgetRenderArrayForPath(string $url_id, string $url): array {
+  public function buildWidgetRenderArrayForPath(string $url_id, string $url, ?string $styleOverride = NULL): array {
     $config = $this->configFactory->get('fastcomments.settings');
-    $commenting_style = $config->get('commenting_style') ?: 'comments';
+    $commenting_style = $styleOverride ?? ($config->get('commenting_style') ?: 'comments');
 
     return [
       '#type' => 'fastcomments',
@@ -214,6 +217,10 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
       case 'collabchat_comments':
         $scripts[] = $cdn_url . '/js/embed-v2.min.js';
         $scripts[] = $cdn_url . '/js/embed-collab-chat.min.js';
+        break;
+
+      case 'imagechat':
+        $scripts[] = $cdn_url . '/js/embed-image-chat.min.js';
         break;
 
       case 'comments':
