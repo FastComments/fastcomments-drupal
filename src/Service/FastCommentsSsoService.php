@@ -137,6 +137,7 @@ class FastCommentsSsoService {
         $user_data['avatar'] = $avatar_url;
       }
 
+      \Drupal::moduleHandler()->alter('fastcomments_user_data', $user_data, $this->currentUser);
       $user_data_json_base64 = base64_encode(json_encode($user_data));
       $verification_hash = hash_hmac('sha256', $timestamp . $user_data_json_base64, $api_secret);
 
@@ -172,6 +173,8 @@ class FastCommentsSsoService {
     if ($avatar_url) {
       $sso['avatar'] = $avatar_url;
     }
+
+    \Drupal::moduleHandler()->alter('fastcomments_user_data', $sso, $this->currentUser);
 
     return $sso;
   }
