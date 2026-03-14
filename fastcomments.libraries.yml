@@ -3,3 +3,10 @@ styling:
   css:
     component:
       css/fastcomments.css: {}
+
+comment_count:
+  version: 1.0
+  js:
+    js/fastcomments-count-init.js: {}
+  dependencies:
+    - core/drupalSettings
