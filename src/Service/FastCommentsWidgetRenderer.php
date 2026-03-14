@@ -115,29 +115,15 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
       '#widget_element_id' => $widget_element_id,
       '#noscript_url' => $noscript_url,
       '#show_noscript' => $show_noscript,
+      '#scripts' => $scripts,
       '#attached' => [
         'library' => ['fastcomments/styling'],
-        'html_head' => [],
       ],
       '#cache' => [
         'contexts' => ['user'],
         'tags' => ['config:fastcomments.settings'],
       ],
     ];
-
-    // Attach CDN scripts via html_head since the URLs are dynamic config.
-    foreach ($scripts as $index => $script_url) {
-      $build['#attached']['html_head'][] = [
-        [
-          '#type' => 'html_tag',
-          '#tag' => 'script',
-          '#attributes' => [
-            'src' => $script_url,
-          ],
-        ],
-        'fastcomments_cdn_script_' . $commenting_style . '_' . $index,
-      ];
-    }
 
     return $build;
   }

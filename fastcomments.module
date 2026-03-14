@@ -53,6 +53,7 @@ function fastcomments_theme() {
         'widget_element_id' => 'fastcomments-widget',
         'noscript_url' => '',
         'show_noscript' => TRUE,
+        'scripts' => [],
       ],
       'template' => 'fastcomments-widget',
     ],
