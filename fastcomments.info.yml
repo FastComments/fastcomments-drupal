@@ -5,5 +5,5 @@ package: FastComments
 core_version_requirement: ^10 || ^11
 configure: fastcomments.settings
 dependencies:
-  - drupal:node
   - drupal:user
+  - drupal:field

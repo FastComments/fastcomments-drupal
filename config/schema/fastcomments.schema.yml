@@ -20,9 +20,14 @@ fastcomments.settings:
     site_url:
       type: string
       label: 'Site URL'
-    enabled_content_types:
-      type: sequence
-      label: 'Enabled Content Types'
-      sequence:
-        type: string
-        label: 'Content type machine name'
+
+field.value.fastcomments_comment:
+  type: mapping
+  label: 'FastComments comment value'
+  mapping:
+    status:
+      type: integer
+      label: 'Commenting status'
+    identifier:
+      type: string
+      label: 'Comment thread identifier'

@@ -2,3 +2,11 @@ administer fastcomments:
   title: 'Administer FastComments'
   description: 'Configure FastComments settings including tenant ID, SSO, and commenting style.'
   restrict access: true
+
+view fastcomments:
+  title: 'View FastComments'
+  description: 'View FastComments commenting widgets on content.'
+
+toggle fastcomments:
+  title: 'Toggle FastComments'
+  description: 'Enable or disable FastComments commenting per entity.'

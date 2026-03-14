@@ -4,4 +4,3 @@ sso_mode: 'none'
 commenting_style: 'comments'
 cdn_url: 'https://cdn.fastcomments.com'
 site_url: 'https://fastcomments.com'
-enabled_content_types: []
