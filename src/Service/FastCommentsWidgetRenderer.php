@@ -84,8 +84,6 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
       $widget_config[$sso_config_key] = $sso_config;
     }
 
-    $config_json = json_encode($widget_config, JSON_UNESCAPED_SLASHES);
-
     // Build noscript URL (only for comments and livechat modes).
     $show_noscript = in_array($commenting_style, ['comments', 'livechat'], TRUE);
     $noscript_url = '';

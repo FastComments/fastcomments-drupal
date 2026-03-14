@@ -22,14 +22,14 @@ class FastCommentsWebhookController extends ControllerBase {
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
-  protected $configFactory;
+  protected ConfigFactoryInterface $configFactory;
 
   /**
    * The entity type manager.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * The mail manager.
@@ -144,8 +144,9 @@ class FastCommentsWebhookController extends ControllerBase {
 
       $params = [
         'entity_title' => $entity->label(),
+        // commenterName and commentHTML are sanitized by FastComments server-side.
         'commenter_name' => $payload['commenterName'] ?? 'Someone',
-        'comment_text' => $payload['comment'] ?? '',
+        'comment_text' => $payload['commentHTML'] ?? '',
       ];
 
       if ($entity->hasLinkTemplate('canonical')) {
