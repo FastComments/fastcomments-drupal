@@ -20,6 +20,9 @@ fastcomments.settings:
     site_url:
       type: string
       label: 'Site URL'
+    email_notifications:
+      type: boolean
+      label: 'Email notifications'
 
 field.value.fastcomments_comment:
   type: mapping

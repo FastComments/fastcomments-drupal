@@ -35,3 +35,13 @@ function fastcomments_requirements($phase) {
   return $requirements;
 }
 
+/**
+ * Add email_notifications config for existing installs.
+ */
+function fastcomments_update_10001() {
+  $config = \Drupal::configFactory()->getEditable('fastcomments.settings');
+  if ($config->get('email_notifications') === NULL) {
+    $config->set('email_notifications', FALSE)->save();
+  }
+}
+

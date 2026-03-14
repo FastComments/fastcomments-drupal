@@ -4,6 +4,7 @@ namespace Drupal\fastcomments\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Configuration form for FastComments settings.
@@ -86,6 +87,19 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['email_notifications'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Email notifications'),
+      '#description' => $this->t('Send an email to content authors when a new comment is posted on their content.'),
+      '#default_value' => $config->get('email_notifications'),
+    ];
+
+    $webhookUrl = Url::fromRoute('fastcomments.webhook', [], ['absolute' => TRUE])->toString();
+    $form['webhook_url'] = [
+      '#type' => 'markup',
+      '#markup' => '<p>' . $this->t('To receive comment notifications, configure this webhook URL in your <a href="https://fastcomments.com/auth/my-account/manage-webhooks" target="_blank">FastComments dashboard</a>: <code>@url</code>', ['@url' => $webhookUrl]) . '</p>',
+    ];
+
     $form['field_setup_help'] = [
       '#type' => 'markup',
       '#markup' => '<p>' . $this->t('To enable FastComments on a content type, add the "FastComments comment" field via Structure &gt; Content types &gt; [type] &gt; Manage fields.') . '</p>',
@@ -116,6 +130,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       ->set('commenting_style', $form_state->getValue('commenting_style'))
       ->set('cdn_url', $form_state->getValue('cdn_url'))
       ->set('site_url', $form_state->getValue('site_url'))
+      ->set('email_notifications', (bool) $form_state->getValue('email_notifications'))
       ->save();
 
     parent::submitForm($form, $form_state);
