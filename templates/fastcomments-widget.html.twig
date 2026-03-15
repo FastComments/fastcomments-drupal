@@ -14,7 +14,7 @@
  */
 #}
 <div class="fastcomments-widget-wrapper" data-fastcomments-instance="{{ widget_element_id }}" role="region" aria-label="FastComments">
-  {% if commenting_style != 'collabchat' %}
+  {% if commenting_style not in ['collabchat', 'imagechat'] %}
     <div id="{{ widget_element_id }}"></div>
   {% endif %}
 

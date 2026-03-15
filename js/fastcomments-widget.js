@@ -106,6 +106,20 @@
           window.FastCommentsCollabChat(main, config);
           return;
         }
+      } else if (style === 'imagechat') {
+        // Image chat attaches to individual <img> elements.
+        var main = findMainContent();
+        if (window.FastCommentsImageChat && main) {
+          var images = main.querySelectorAll('img:not([data-fc-image-chat])');
+          if (images.length > 0) {
+            window.fcInitializedById[dedupKey] = true;
+            for (var j = 0; j < images.length; j++) {
+              images[j].setAttribute('data-fc-image-chat', 'true');
+              window.FastCommentsImageChat(images[j], config);
+            }
+            return;
+          }
+        }
       } else {
         var target = document.getElementById(elementId);
         if (window[styleInfo.initFn] && target) {
