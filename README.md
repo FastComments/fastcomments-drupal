@@ -4,7 +4,7 @@ Integrates the [FastComments](https://fastcomments.com) commenting widget with D
 
 ## Installation
 
-1. Place this module in your Drupal site's `modules/custom/fastcomments/` directory (or install via Composer).
+1. Place this module in your Drupal site's `modules/custom/fastcomments/` directory (or install via Composer: `composer require drupal/fcom`).
 2. Enable the module:
    ```bash
    drush en fastcomments
@@ -13,24 +13,28 @@ Integrates the [FastComments](https://fastcomments.com) commenting widget with D
 
 ## Configuration
 
-Navigate to **Administration > Configuration > Content authoring > FastComments** (`/admin/config/content/fastcomments`).
+Navigate to **Administration > Configuration > Content > FastComments** (`/admin/config/content/fastcomments`).
 
 ### Settings
 
-- **Tenant ID** (required) - Your FastComments Tenant ID, found in your [FastComments dashboard](https://fastcomments.com) under My Account.
-- **API Secret** - Required when SSO Mode is "Secure". Found in your FastComments dashboard under My Account.
+- **Tenant ID** (required) - Your FastComments Tenant ID. Find this under [Settings > API/SSO](https://fastcomments.com/auth/my-account/api) ([EU](https://eu.fastcomments.com/auth/my-account/api)).
+- **API Secret** - Required for Secure SSO, webhook verification, and page sync. Found under [Settings > API/SSO](https://fastcomments.com/auth/my-account/api) ([EU](https://eu.fastcomments.com/auth/my-account/api)).
 - **SSO Mode** - Single Sign-On integration:
   - **None** - No SSO, users comment as guests or create FastComments accounts.
   - **Simple** - Passes Drupal user info (name, email, avatar) to FastComments without server-side verification.
   - **Secure** - Uses HMAC-SHA256 verification to securely authenticate Drupal users with FastComments (recommended).
 - **Commenting Style** - The type of widget to display:
-  - **Comments** - Standard threaded comments.
+  - **Live Comments** - Real-time threaded comments.
   - **Streaming Chat** - Live chat interface.
-  - **Collab Chat** - Collaborative chat overlay on the main content area.
+  - **Collab Chat** - Collaborative text-selection annotation on the main content area.
   - **Collab Chat + Comments** - Both collab chat and standard comments.
 - **CDN URL** - FastComments CDN URL (default: `https://cdn.fastcomments.com`).
 - **Site URL** - FastComments site URL (default: `https://fastcomments.com`).
-- **Enabled Content Types** - Select which node types should display the FastComments widget. Native Drupal comment fields are automatically hidden on these content types.
+- **Email notifications** - Send an email to content authors when a new comment is posted on their content.
+
+### Adding Comments to Content Types
+
+Add the **FastComments** field to your content types via **Structure > Content types > [type] > Manage fields**. The field has a status toggle and an optional custom identifier per entity.
 
 ### EU Data Residency
 
@@ -38,30 +42,42 @@ For EU data residency, update:
 - **CDN URL** to `https://cdn-eu.fastcomments.com`
 - **Site URL** to `https://eu.fastcomments.com`
 
-## Block Placement
+## Widget Blocks
 
-In addition to automatic injection on enabled content types, you can manually place the FastComments widget using the **FastComments Widget** block via **Structure > Block layout** (`/admin/structure/block`).
+Several blocks are available via **Structure > Block layout** (`/admin/structure/block`):
 
-The block automatically detects the current node context. On non-node pages, it generates a URL ID from the current path. The block will not render on pages where automatic injection is already active (to prevent duplicates).
+- **FastComments Widget** - The main commenting widget. Auto-detects the current entity. Skips entities that already have the FastComments field (to prevent duplicates).
+- **FastComments Live Chat** - Real-time streaming chat. Can be placed alongside the comment field on the same page.
+- **FastComments Collab Chat** - Text-selection annotation and discussion.
+- **FastComments Image Chat** - Coordinate-based annotation on images.
+- **FastComments Recent Comments** - Displays recent comments across your site. Configurable comment count.
+- **FastComments Top Pages** - Shows pages with the most comments.
+
+Content-centric blocks (Live Chat, Collab Chat, Image Chat) auto-detect the current entity and fall back to a path-based identifier on non-entity pages.
+
+## Multilingual
+
+The module automatically passes the current Drupal site language to all widgets.
 
 ## Permissions
 
-- **Administer FastComments** - Access to the FastComments settings form. Granted to administrators by default.
+- **Administer FastComments** - Access to the FastComments settings form.
+- **View FastComments** - Required to see the commenting widget.
+- **Toggle FastComments** - Allows users to enable/disable comments per entity via the field widget.
 
 ## How It Works
 
-When a user visits a node of an enabled content type:
+When a user visits an entity with the FastComments field enabled:
 
-1. Native Drupal comment fields are hidden.
-2. The FastComments JavaScript widget is loaded from the CDN.
-3. If SSO is configured, the user's Drupal identity is passed to FastComments.
-4. A `<noscript>` fallback provides server-rendered comments for users without JavaScript (comments and live chat modes only).
+1. The FastComments JavaScript widget is loaded from the CDN.
+2. If SSO is configured, the user's Drupal identity is passed to FastComments.
+3. A `<noscript>` fallback provides server-rendered comments for users without JavaScript (Live Comments and Streaming Chat modes only).
 
 ## Requirements
 
 - Drupal 10 or 11
 - PHP 8.1+
-- The Node and User core modules (included with Drupal)
+- A [FastComments](https://fastcomments.com) account
 
 ## License
 
