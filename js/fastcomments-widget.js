@@ -43,7 +43,12 @@
   }
 
   function findMainContent() {
-    return document.querySelector('[role="main"]') ||
+    // Prefer the article/node content area for collab chat, so the
+    // annotation bar attaches to the actual content, not the full page.
+    return document.querySelector('article .node__content') ||
+           document.querySelector('article .field--name-body') ||
+           document.querySelector('article') ||
+           document.querySelector('[role="main"]') ||
            document.querySelector('main') ||
            document.getElementById('main-content');
   }
