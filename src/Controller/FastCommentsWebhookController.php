@@ -18,20 +18,6 @@ use Drupal\user\EntityOwnerInterface;
 class FastCommentsWebhookController extends ControllerBase {
 
   /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
-
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
-
-  /**
    * The mail manager.
    *
    * @var \Drupal\Core\Mail\MailManagerInterface
