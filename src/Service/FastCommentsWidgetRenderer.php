@@ -4,6 +4,7 @@ namespace Drupal\fastcomments\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
 
 /**
@@ -26,14 +27,23 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
   protected FastCommentsSsoService $ssoService;
 
   /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected LanguageManagerInterface $languageManager;
+
+  /**
    * Constructs a FastCommentsWidgetRenderer.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     FastCommentsSsoService $sso_service,
+    LanguageManagerInterface $language_manager,
   ) {
     $this->configFactory = $config_factory;
     $this->ssoService = $sso_service;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -69,7 +79,7 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
     }
 
     // Build widget config.
-    $locale = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $locale = $this->languageManager->getCurrentLanguage()->getId();
     $widget_config = [
       'tenantId' => $tenant_id,
       'urlId' => $identifier,
@@ -137,6 +147,8 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The entity to attach comments to.
+   * @param string|null $styleOverride
+   *   Optional commenting style override.
    *
    * @return array
    *   A render element array.
@@ -161,12 +173,14 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
   }
 
   /**
-   * Build a render element using a URL path as the identifier (for non-entity pages).
+   * Build a render element for a URL path (non-entity pages).
    *
    * @param string $url_id
    *   The URL ID to use.
    * @param string $url
    *   The canonical URL.
+   * @param string|null $styleOverride
+   *   Optional commenting style override.
    *
    * @return array
    *   A render element array.

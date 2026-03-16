@@ -4,6 +4,7 @@ namespace Drupal\fastcomments\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Url;
@@ -42,6 +43,13 @@ class FastCommentsSsoService {
   protected FileUrlGeneratorInterface $fileUrlGenerator;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected ModuleHandlerInterface $moduleHandler;
+
+  /**
    * Constructs a FastCommentsSsoService.
    */
   public function __construct(
@@ -49,11 +57,13 @@ class FastCommentsSsoService {
     ConfigFactoryInterface $config_factory,
     EntityTypeManagerInterface $entity_type_manager,
     FileUrlGeneratorInterface $file_url_generator,
+    ModuleHandlerInterface $module_handler,
   ) {
     $this->currentUser = $current_user;
     $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
     $this->fileUrlGenerator = $file_url_generator;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -137,7 +147,7 @@ class FastCommentsSsoService {
         $user_data['avatar'] = $avatar_url;
       }
 
-      \Drupal::moduleHandler()->alter('fastcomments_user_data', $user_data, $this->currentUser);
+      $this->moduleHandler->alter('fastcomments_user_data', $user_data, $this->currentUser);
       $user_data_json_base64 = base64_encode(json_encode($user_data));
       $verification_hash = hash_hmac('sha256', $timestamp . $user_data_json_base64, $api_secret);
 
@@ -174,7 +184,7 @@ class FastCommentsSsoService {
       $sso['avatar'] = $avatar_url;
     }
 
-    \Drupal::moduleHandler()->alter('fastcomments_user_data', $sso, $this->currentUser);
+    $this->moduleHandler->alter('fastcomments_user_data', $sso, $this->currentUser);
 
     return $sso;
   }

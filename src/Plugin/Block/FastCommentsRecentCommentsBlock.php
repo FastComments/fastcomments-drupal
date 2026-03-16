@@ -5,6 +5,7 @@ namespace Drupal\fastcomments\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -27,6 +28,13 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
   protected ConfigFactoryInterface $configFactory;
 
   /**
+   * The language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected LanguageManagerInterface $languageManager;
+
+  /**
    * Constructs a FastCommentsRecentCommentsBlock.
    */
   public function __construct(
@@ -34,9 +42,11 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
     $plugin_id,
     $plugin_definition,
     ConfigFactoryInterface $config_factory,
+    LanguageManagerInterface $language_manager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->configFactory = $config_factory;
+    $this->languageManager = $language_manager;
   }
 
   /**
@@ -48,6 +58,7 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
       $plugin_id,
       $plugin_definition,
       $container->get('config.factory'),
+      $container->get('language_manager'),
     );
   }
 
@@ -93,7 +104,7 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
     $cdn_url = rtrim($config->get('cdn_url') ?: 'https://cdn.fastcomments.com', '/');
     $count = (int) ($this->configuration['count'] ?? 5);
 
-    $locale = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $locale = $this->languageManager->getCurrentLanguage()->getId();
     $widget_config = [
       'tenantId' => $tenant_id,
       'count' => $count,

@@ -5,6 +5,8 @@
  * Install, update, and requirements for the FastComments module.
  */
 
+use Drupal\Core\Url;
+
 /**
  * Implements hook_requirements().
  */
@@ -22,7 +24,7 @@ function fastcomments_requirements($phase) {
     if (empty($tenant_id)) {
       $requirements['fastcomments_tenant_id']['value'] = t('Not configured');
       $requirements['fastcomments_tenant_id']['description'] = t('FastComments Tenant ID is not set. <a href=":url">Configure FastComments</a> to enable the commenting widget.', [
-        ':url' => \Drupal\Core\Url::fromRoute('fastcomments.settings')->toString(),
+        ':url' => Url::fromRoute('fastcomments.settings')->toString(),
       ]);
       $requirements['fastcomments_tenant_id']['severity'] = REQUIREMENT_WARNING;
     }
@@ -51,4 +53,3 @@ function fastcomments_update_10001() {
     $config->set('email_notifications', FALSE)->save();
   }
 }
-

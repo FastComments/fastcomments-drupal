@@ -130,7 +130,8 @@ class FastCommentsWebhookController extends ControllerBase {
 
       $params = [
         'entity_title' => $entity->label(),
-        // commenterName and commentHTML are sanitized by FastComments server-side.
+        // commenterName and commentHTML are sanitized by
+        // FastComments server-side.
         'commenter_name' => $payload['commenterName'] ?? 'Someone',
         'comment_text' => $payload['commentHTML'] ?? '',
       ];

@@ -2,10 +2,12 @@
 
 namespace Drupal\fastcomments\Plugin\views\field;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Displays the FastComments comment count for an entity.
@@ -13,6 +15,38 @@ use Drupal\views\ResultRow;
  * @ViewsField("fastcomments_count")
  */
 class FastCommentsCount extends FieldPluginBase {
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected ConfigFactoryInterface $configFactory;
+
+  /**
+   * Constructs a FastCommentsCount field plugin.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    ConfigFactoryInterface $config_factory,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->configFactory = $config_factory;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('config.factory'),
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -40,7 +74,7 @@ class FastCommentsCount extends FieldPluginBase {
       $identifier = 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
     }
 
-    $config = \Drupal::config('fastcomments.settings');
+    $config = $this->configFactory->get('fastcomments.settings');
     $tenant_id = $config->get('tenant_id');
     if (empty($tenant_id)) {
       return [];

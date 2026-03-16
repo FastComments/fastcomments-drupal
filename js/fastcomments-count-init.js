@@ -1,30 +1,29 @@
 (function (Drupal, drupalSettings) {
-  'use strict';
-
-  var scriptLoaded = false;
+  let scriptLoaded = false;
 
   Drupal.behaviors.fastcommentsCount = {
-    attach: function (context) {
+    attach() {
       if (scriptLoaded) {
         return;
       }
 
-      var settings = drupalSettings.fastcomments;
+      const settings = drupalSettings.fastcomments;
       if (!settings || !settings.tenantId) {
         return;
       }
 
-      var cdnUrl = settings.cdnUrl || 'https://cdn.fastcomments.com';
+      const cdnUrl = settings.cdnUrl || 'https://cdn.fastcomments.com';
 
-      window.FastCommentsBulkCountConfig = window.FastCommentsBulkCountConfig || {
-        tenantId: settings.tenantId
-      };
+      window.FastCommentsBulkCountConfig =
+        window.FastCommentsBulkCountConfig || {
+          tenantId: settings.tenantId,
+        };
 
-      var script = document.createElement('script');
-      script.src = cdnUrl + '/js/embed-widget-comment-count-bulk.min.js';
+      const script = document.createElement('script');
+      script.src = `${cdnUrl}/js/embed-widget-comment-count-bulk.min.js`;
       script.async = true;
       document.body.appendChild(script);
       scriptLoaded = true;
-    }
+    },
   };
 })(Drupal, drupalSettings);

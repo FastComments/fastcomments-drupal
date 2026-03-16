@@ -5,10 +5,12 @@ namespace Drupal\fastcomments\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\fastcomments\Service\FastCommentsWidgetRenderer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Base class for content-centric FastComments widget blocks.
@@ -44,6 +46,20 @@ abstract class FastCommentsContentWidgetBlockBase extends BlockBase implements C
   protected ConfigFactoryInterface $configFactory;
 
   /**
+   * The current path service.
+   *
+   * @var \Drupal\Core\Path\CurrentPathStack
+   */
+  protected CurrentPathStack $currentPath;
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected RequestStack $requestStack;
+
+  /**
    * Constructs a FastCommentsContentWidgetBlockBase.
    */
   public function __construct(
@@ -53,11 +69,15 @@ abstract class FastCommentsContentWidgetBlockBase extends BlockBase implements C
     FastCommentsWidgetRenderer $widget_renderer,
     RouteMatchInterface $route_match,
     ConfigFactoryInterface $config_factory,
+    CurrentPathStack $current_path,
+    RequestStack $request_stack,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->widgetRenderer = $widget_renderer;
     $this->routeMatch = $route_match;
     $this->configFactory = $config_factory;
+    $this->currentPath = $current_path;
+    $this->requestStack = $request_stack;
   }
 
   /**
@@ -71,6 +91,8 @@ abstract class FastCommentsContentWidgetBlockBase extends BlockBase implements C
       $container->get('fastcomments.widget_renderer'),
       $container->get('current_route_match'),
       $container->get('config.factory'),
+      $container->get('path.current'),
+      $container->get('request_stack'),
     );
   }
 
@@ -108,9 +130,9 @@ abstract class FastCommentsContentWidgetBlockBase extends BlockBase implements C
     }
 
     // Fallback for non-entity pages: use URL path hash as urlId.
-    $current_path = \Drupal::service('path.current')->getPath();
+    $current_path = $this->currentPath->getPath();
     $url_id = 'drupal-path-' . md5($current_path);
-    $request = \Drupal::request();
+    $request = $this->requestStack->getCurrentRequest();
     $url = $request->getSchemeAndHttpHost() . $request->getRequestUri();
 
     return $this->widgetRenderer->buildWidgetRenderArrayForPath($url_id, $url, $style);
