@@ -122,9 +122,7 @@
         // Image chat attaches to individual <img> elements.
         const main = findMainContent();
         if (window.FastCommentsImageChat && main) {
-          const images = main.querySelectorAll(
-            'img:not([data-fc-image-chat])',
-          );
+          const images = main.querySelectorAll('img:not([data-fc-image-chat])');
           if (images.length > 0) {
             window.fcInitializedById[dedupKey] = true;
             for (let j = 0; j < images.length; j++) {
