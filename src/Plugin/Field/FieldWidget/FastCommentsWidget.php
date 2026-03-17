@@ -2,31 +2,25 @@
 
 namespace Drupal\fastcomments\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Field\Attribute\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'fastcomments_comment' widget.
- *
- * @FieldWidget(
- *   id = "fastcomments_comment",
- *   label = @Translation("FastComments Settings"),
- *   field_types = {"fastcomments_comment"},
- * )
  */
+#[FieldWidget(
+  id: 'fastcomments_comment',
+  label: new TranslatableMarkup('FastComments Settings'),
+  field_types: ['fastcomments_comment'],
+)]
 class FastCommentsWidget extends WidgetBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected AccountProxyInterface $currentUser;
 
   /**
    * Constructs a FastCommentsWidget.
@@ -37,10 +31,9 @@ class FastCommentsWidget extends WidgetBase implements ContainerFactoryPluginInt
     FieldDefinitionInterface $field_definition,
     array $settings,
     array $third_party_settings,
-    AccountProxyInterface $current_user,
+    protected AccountProxyInterface $currentUser,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $third_party_settings);
-    $this->currentUser = $current_user;
   }
 
   /**

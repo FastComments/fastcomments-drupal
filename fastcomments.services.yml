@@ -1,4 +1,7 @@
 services:
+  fastcomments.hooks:
+    class: Drupal\fastcomments\Hook\FastCommentsHooks
+    arguments: ['@entity_field.manager', '@config.factory', '@fastcomments.api_client']
   logger.channel.fastcomments:
     parent: logger.channel_base
     arguments: ['fastcomments']

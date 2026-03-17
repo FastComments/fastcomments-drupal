@@ -2,28 +2,22 @@
 
 namespace Drupal\fastcomments\Plugin\Block;
 
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a FastComments Top Pages block.
- *
- * @Block(
- *   id = "fastcomments_top_pages",
- *   admin_label = @Translation("FastComments Top Pages"),
- *   category = @Translation("FastComments"),
- * )
  */
+#[Block(
+  id: 'fastcomments_top_pages',
+  admin_label: new TranslatableMarkup('FastComments Top Pages'),
+  category: new TranslatableMarkup('FastComments'),
+)]
 class FastCommentsTopPagesBlock extends BlockBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
 
   /**
    * Constructs a FastCommentsTopPagesBlock.
@@ -32,10 +26,9 @@ class FastCommentsTopPagesBlock extends BlockBase implements ContainerFactoryPlu
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ConfigFactoryInterface $config_factory,
+    protected ConfigFactoryInterface $configFactory,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->configFactory = $config_factory;
   }
 
   /**

@@ -2,9 +2,7 @@
 
 namespace Drupal\fastcomments\Controller;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,36 +16,18 @@ use Drupal\user\EntityOwnerInterface;
 class FastCommentsWebhookController extends ControllerBase {
 
   /**
-   * The mail manager.
-   *
-   * @var \Drupal\Core\Mail\MailManagerInterface
-   */
-  protected MailManagerInterface $mailManager;
-
-  /**
-   * The logger.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected LoggerInterface $logger;
-
-  /**
    * Constructs a FastCommentsWebhookController.
    */
-  public function __construct(ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager, MailManagerInterface $mailManager, LoggerInterface $logger) {
-    $this->configFactory = $configFactory;
-    $this->entityTypeManager = $entityTypeManager;
-    $this->mailManager = $mailManager;
-    $this->logger = $logger;
-  }
+  public function __construct(
+    protected MailManagerInterface $mailManager,
+    protected LoggerInterface $logger,
+  ) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
     return new static(
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
       $container->get('plugin.manager.mail'),
       $container->get('logger.channel.fastcomments'),
     );
@@ -57,7 +37,7 @@ class FastCommentsWebhookController extends ControllerBase {
    * Handles incoming webhook requests from FastComments.
    */
   public function handleWebhook(Request $request): JsonResponse {
-    $config = $this->configFactory->get('fastcomments.settings');
+    $config = $this->config('fastcomments.settings');
     $apiSecret = $config->get('api_secret');
 
     if (empty($apiSecret)) {
@@ -109,7 +89,7 @@ class FastCommentsWebhookController extends ControllerBase {
     $entityId = $parts[2];
 
     try {
-      $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
+      $entity = $this->entityTypeManager()->getStorage($entityType)->load($entityId);
       if (!$entity) {
         return new JsonResponse(['status' => 'ok']);
       }

@@ -1,0 +1,242 @@
+<?php
+
+namespace Drupal\fastcomments\Hook;
+
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
+use Drupal\fastcomments\Service\FastCommentsApiClient;
+
+/**
+ * Hook implementations for the FastComments module.
+ */
+class FastCommentsHooks {
+
+  /**
+   * Constructs a FastCommentsHooks instance.
+   */
+  public function __construct(
+    protected EntityFieldManagerInterface $entityFieldManager,
+    protected ConfigFactoryInterface $configFactory,
+    protected FastCommentsApiClient $apiClient,
+  ) {}
+
+  /**
+   * Implements hook_help().
+   */
+  #[Hook('help')]
+  public function help(string $route_name, RouteMatchInterface $route_match): ?string {
+    switch ($route_name) {
+      case 'help.page.fastcomments':
+        $output = '<h2>' . t('About') . '</h2>';
+        $output .= '<p>' . t('The FastComments module integrates the <a href="https://fastcomments.com" target="_blank">FastComments</a> commenting widget with your Drupal site, replacing native comments with a fast, real-time commenting system.') . '</p>';
+        $output .= '<h2>' . t('Setup') . '</h2>';
+        $output .= '<ol>';
+        $output .= '<li>' . t('Go to <a href=":settings">FastComments settings</a> and enter your Tenant ID.', [':settings' => '/admin/config/content/fastcomments']) . '</li>';
+        $output .= '<li>' . t('Add the "FastComments" field to your content types via Structure &gt; Content types &gt; Manage fields.') . '</li>';
+        $output .= '<li>' . t('Optionally, enable SSO to sync Drupal user accounts with FastComments.') . '</li>';
+        $output .= '</ol>';
+        $output .= '<h2>' . t('Widget blocks') . '</h2>';
+        $output .= '<p>' . t('Several widget blocks are available under Structure &gt; Block layout:') . '</p>';
+        $output .= '<ul>';
+        $output .= '<li>' . t('<strong>FastComments Widget</strong> &ndash; The main commenting widget. Attaches to the current page entity.') . '</li>';
+        $output .= '<li>' . t('<strong>FastComments Live Chat</strong> &ndash; A real-time streaming chat widget.') . '</li>';
+        $output .= '<li>' . t('<strong>FastComments Collab Chat</strong> &ndash; Text-selection annotation and discussion.') . '</li>';
+        $output .= '<li>' . t('<strong>FastComments Image Chat</strong> &ndash; Coordinate-based annotation on images.') . '</li>';
+        $output .= '<li>' . t('<strong>FastComments Recent Comments</strong> &ndash; Displays recent comments across your site.') . '</li>';
+        $output .= '<li>' . t('<strong>FastComments Top Pages</strong> &ndash; Shows pages with the most comments.') . '</li>';
+        $output .= '</ul>';
+        return $output;
+    }
+    return NULL;
+  }
+
+  /**
+   * Implements hook_theme().
+   */
+  #[Hook('theme')]
+  public function theme(): array {
+    return [
+      'fastcomments_widget' => [
+        'variables' => [
+          'commenting_style' => 'comments',
+          'widget_element_id' => 'fastcomments-widget',
+          'noscript_url' => '',
+          'show_noscript' => TRUE,
+        ],
+        'template' => 'fastcomments-widget',
+      ],
+      'fastcomments_simple_widget' => [
+        'variables' => [
+          'widget_element_id' => '',
+          'config_json' => '',
+          'init_function' => '',
+        ],
+        'template' => 'fastcomments-simple-widget',
+      ],
+    ];
+  }
+
+  /**
+   * Implements hook_entity_extra_field_info().
+   */
+  #[Hook('entity_extra_field_info')]
+  public function entityExtraFieldInfo(): array {
+    $extra = [];
+
+    $field_map = $this->entityFieldManager->getFieldMap();
+    foreach ($field_map as $entity_type_id => $fields) {
+      foreach ($fields as $field_name => $field_info) {
+        if ($field_info['type'] !== 'fastcomments_comment') {
+          continue;
+        }
+        foreach ($field_info['bundles'] as $bundle) {
+          $extra[$entity_type_id][$bundle]['display']['fastcomments_comment_count'] = [
+            'label' => t('FastComments Comment Count'),
+            'description' => t('Displays the comment count from FastComments.'),
+            'weight' => 100,
+            'visible' => FALSE,
+          ];
+        }
+      }
+    }
+
+    return $extra;
+  }
+
+  /**
+   * Implements hook_entity_view().
+   */
+  #[Hook('entity_view')]
+  public function entityView(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
+    if (!$display->getComponent('fastcomments_comment_count')) {
+      return;
+    }
+
+    if (!$entity instanceof ContentEntityInterface) {
+      return;
+    }
+
+    $values = FastCommentsItem::getFieldValues($entity);
+    if ($values === NULL || $values['status'] !== 1) {
+      return;
+    }
+
+    $identifier = $values['identifier'];
+    if (empty($identifier)) {
+      $identifier = 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
+    }
+
+    $config = $this->configFactory->get('fastcomments.settings');
+    $tenant_id = $config->get('tenant_id');
+    if (empty($tenant_id)) {
+      return;
+    }
+
+    $cdn_url = rtrim($config->get('cdn_url') ?: 'https://cdn.fastcomments.com', '/');
+
+    $build['fastcomments_comment_count'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'span',
+      '#attributes' => [
+        'class' => ['fast-comments-count'],
+        'data-fast-comments-url-id' => $identifier,
+      ],
+      '#attached' => [
+        'library' => ['fastcomments/comment_count'],
+        'drupalSettings' => [
+          'fastcomments' => [
+            'tenantId' => $tenant_id,
+            'cdnUrl' => $cdn_url,
+          ],
+        ],
+      ],
+    ];
+  }
+
+  /**
+   * Implements hook_entity_update().
+   */
+  #[Hook('entity_update')]
+  public function entityUpdate(EntityInterface $entity): void {
+    if (!$entity instanceof ContentEntityInterface) {
+      return;
+    }
+
+    $values = FastCommentsItem::getFieldValues($entity);
+    if ($values === NULL) {
+      return;
+    }
+
+    $config = $this->configFactory->get('fastcomments.settings');
+    if (empty($config->get('api_secret'))) {
+      return;
+    }
+
+    $identifier = $values['identifier'];
+    $urlId = !empty($identifier) ? $identifier : 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
+
+    $page = $this->apiClient->getPageByUrlId($urlId);
+    if ($page === NULL) {
+      return;
+    }
+
+    $data = ['title' => $entity->label()];
+    if ($entity->hasLinkTemplate('canonical')) {
+      $data['url'] = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+    }
+
+    $this->apiClient->updatePage($page['id'], $data);
+  }
+
+  /**
+   * Implements hook_entity_delete().
+   */
+  #[Hook('entity_delete')]
+  public function entityDelete(EntityInterface $entity): void {
+    if (!$entity instanceof ContentEntityInterface) {
+      return;
+    }
+
+    $values = FastCommentsItem::getFieldValues($entity);
+    if ($values === NULL) {
+      return;
+    }
+
+    $config = $this->configFactory->get('fastcomments.settings');
+    if (empty($config->get('api_secret'))) {
+      return;
+    }
+
+    $identifier = $values['identifier'];
+    $urlId = !empty($identifier) ? $identifier : 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
+
+    $page = $this->apiClient->getPageByUrlId($urlId);
+    if ($page === NULL) {
+      return;
+    }
+
+    $this->apiClient->deletePage($page['id']);
+  }
+
+  /**
+   * Implements hook_mail().
+   */
+  #[Hook('mail')]
+  public function mail($key, &$message, $params): void {
+    if ($key === 'new_comment') {
+      $message['subject'] = t('New comment on @title', ['@title' => $params['entity_title']]);
+      $message['body'][] = t('@name left a comment:', ['@name' => $params['commenter_name']]);
+      $message['body'][] = $params['comment_text'];
+      if (!empty($params['entity_url'])) {
+        $message['body'][] = t('View: @url', ['@url' => $params['entity_url']]);
+      }
+    }
+  }
+
+}

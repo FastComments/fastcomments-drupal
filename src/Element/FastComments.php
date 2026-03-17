@@ -2,13 +2,13 @@
 
 namespace Drupal\fastcomments\Element;
 
+use Drupal\Core\Render\Attribute\RenderElement;
 use Drupal\Core\Render\Element\RenderElementBase;
 
 /**
  * Provides a FastComments render element.
- *
- * @RenderElement("fastcomments")
  */
+#[RenderElement('fastcomments')]
 class FastComments extends RenderElementBase {
 
   /**

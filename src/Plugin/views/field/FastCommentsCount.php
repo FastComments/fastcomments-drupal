@@ -5,23 +5,16 @@ namespace Drupal\fastcomments\Plugin\views\field;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
+use Drupal\views\Attribute\ViewsField;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Displays the FastComments comment count for an entity.
- *
- * @ViewsField("fastcomments_count")
  */
+#[ViewsField('fastcomments_count')]
 class FastCommentsCount extends FieldPluginBase {
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
 
   /**
    * Constructs a FastCommentsCount field plugin.
@@ -30,10 +23,9 @@ class FastCommentsCount extends FieldPluginBase {
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ConfigFactoryInterface $config_factory,
+    protected ConfigFactoryInterface $configFactory,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->configFactory = $config_factory;
   }
 
   /**

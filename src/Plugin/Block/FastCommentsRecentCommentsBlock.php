@@ -2,37 +2,24 @@
 
 namespace Drupal\fastcomments\Plugin\Block;
 
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a FastComments Recent Comments block.
- *
- * @Block(
- *   id = "fastcomments_recent_comments",
- *   admin_label = @Translation("FastComments Recent Comments"),
- *   category = @Translation("FastComments"),
- * )
  */
+#[Block(
+  id: 'fastcomments_recent_comments',
+  admin_label: new TranslatableMarkup('FastComments Recent Comments'),
+  category: new TranslatableMarkup('FastComments'),
+)]
 class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
-
-  /**
-   * The language manager.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected LanguageManagerInterface $languageManager;
 
   /**
    * Constructs a FastCommentsRecentCommentsBlock.
@@ -41,12 +28,10 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    ConfigFactoryInterface $config_factory,
-    LanguageManagerInterface $language_manager,
+    protected ConfigFactoryInterface $configFactory,
+    protected LanguageManagerInterface $languageManager,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->configFactory = $config_factory;
-    $this->languageManager = $language_manager;
   }
 
   /**

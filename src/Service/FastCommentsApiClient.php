@@ -13,34 +13,13 @@ use Psr\Log\LoggerInterface;
 class FastCommentsApiClient {
 
   /**
-   * The HTTP client.
-   *
-   * @var \GuzzleHttp\ClientInterface
-   */
-  protected ClientInterface $httpClient;
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
-
-  /**
-   * The logger.
-   *
-   * @var \Psr\Log\LoggerInterface
-   */
-  protected LoggerInterface $logger;
-
-  /**
    * Constructs a FastCommentsApiClient.
    */
-  public function __construct(ClientInterface $httpClient, ConfigFactoryInterface $configFactory, LoggerInterface $logger) {
-    $this->httpClient = $httpClient;
-    $this->configFactory = $configFactory;
-    $this->logger = $logger;
-  }
+  public function __construct(
+    protected ClientInterface $httpClient,
+    protected ConfigFactoryInterface $configFactory,
+    protected LoggerInterface $logger,
+  ) {}
 
   /**
    * Checks whether the API client is configured with required credentials.

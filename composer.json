@@ -7,8 +7,5 @@
   "support": {
     "issues": "https://github.com/FastComments/fastcomments-drupal/issues",
     "source": "https://github.com/FastComments/fastcomments-drupal"
-  },
-  "require": {
-    "drupal/core": "^10 || ^11"
   }
 }

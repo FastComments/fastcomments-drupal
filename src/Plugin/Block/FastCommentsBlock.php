@@ -2,12 +2,14 @@
 
 namespace Drupal\fastcomments\Plugin\Block;
 
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\fastcomments\Plugin\Field\FieldType\FastCommentsItem;
 use Drupal\fastcomments\Service\FastCommentsWidgetRenderer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,49 +17,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Provides a FastComments widget block.
- *
- * @Block(
- *   id = "fastcomments_block",
- *   admin_label = @Translation("FastComments Widget"),
- *   category = @Translation("FastComments"),
- * )
  */
+#[Block(
+  id: 'fastcomments_block',
+  admin_label: new TranslatableMarkup('FastComments Widget'),
+  category: new TranslatableMarkup('FastComments'),
+)]
 class FastCommentsBlock extends BlockBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The widget renderer.
-   *
-   * @var \Drupal\fastcomments\Service\FastCommentsWidgetRenderer
-   */
-  protected FastCommentsWidgetRenderer $widgetRenderer;
-
-  /**
-   * The current route match.
-   *
-   * @var \Drupal\Core\Routing\RouteMatchInterface
-   */
-  protected RouteMatchInterface $routeMatch;
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
-
-  /**
-   * The current path service.
-   *
-   * @var \Drupal\Core\Path\CurrentPathStack
-   */
-  protected CurrentPathStack $currentPath;
-
-  /**
-   * The request stack.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected RequestStack $requestStack;
 
   /**
    * Constructs a FastCommentsBlock.
@@ -66,18 +32,13 @@ class FastCommentsBlock extends BlockBase implements ContainerFactoryPluginInter
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    FastCommentsWidgetRenderer $widget_renderer,
-    RouteMatchInterface $route_match,
-    ConfigFactoryInterface $config_factory,
-    CurrentPathStack $current_path,
-    RequestStack $request_stack,
+    protected FastCommentsWidgetRenderer $widgetRenderer,
+    protected RouteMatchInterface $routeMatch,
+    protected ConfigFactoryInterface $configFactory,
+    protected CurrentPathStack $currentPath,
+    protected RequestStack $requestStack,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->widgetRenderer = $widget_renderer;
-    $this->routeMatch = $route_match;
-    $this->configFactory = $config_factory;
-    $this->currentPath = $current_path;
-    $this->requestStack = $request_stack;
   }
 
   /**

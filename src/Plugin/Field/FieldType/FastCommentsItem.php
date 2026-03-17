@@ -3,21 +3,22 @@
 namespace Drupal\fastcomments\Plugin\Field\FieldType;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Field\Attribute\FieldType;
 use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\DataDefinition;
 
 /**
  * Defines the 'fastcomments_comment' field type.
- *
- * @FieldType(
- *   id = "fastcomments_comment",
- *   label = @Translation("FastComments"),
- *   description = @Translation("Adds a FastComments commenting widget to an entity."),
- *   default_widget = "fastcomments_comment",
- *   default_formatter = "fastcomments_comment",
- * )
  */
+#[FieldType(
+  id: 'fastcomments_comment',
+  label: new TranslatableMarkup('FastComments'),
+  description: new TranslatableMarkup('Adds a FastComments commenting widget to an entity.'),
+  default_widget: 'fastcomments_comment',
+  default_formatter: 'fastcomments_comment',
+)]
 class FastCommentsItem extends FieldItemBase {
 
   /**

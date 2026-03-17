@@ -13,38 +13,13 @@ use Drupal\Core\Security\TrustedCallbackInterface;
 class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
 
   /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
-
-  /**
-   * The SSO service.
-   *
-   * @var \Drupal\fastcomments\Service\FastCommentsSsoService
-   */
-  protected FastCommentsSsoService $ssoService;
-
-  /**
-   * The language manager.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected LanguageManagerInterface $languageManager;
-
-  /**
    * Constructs a FastCommentsWidgetRenderer.
    */
   public function __construct(
-    ConfigFactoryInterface $config_factory,
-    FastCommentsSsoService $sso_service,
-    LanguageManagerInterface $language_manager,
-  ) {
-    $this->configFactory = $config_factory;
-    $this->ssoService = $sso_service;
-    $this->languageManager = $language_manager;
-  }
+    protected ConfigFactoryInterface $configFactory,
+    protected FastCommentsSsoService $ssoService,
+    protected LanguageManagerInterface $languageManager,
+  ) {}
 
   /**
    * {@inheritdoc}

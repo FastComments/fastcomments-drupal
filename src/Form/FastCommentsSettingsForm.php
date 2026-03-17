@@ -29,13 +29,11 @@ class FastCommentsSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('fastcomments.settings');
-
     $form['tenant_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Tenant ID'),
       '#description' => $this->t('Your FastComments Tenant ID. Find this under <a href="https://fastcomments.com/auth/my-account/api" target="_blank">Settings &gt; API/SSO</a> (or <a href="https://eu.fastcomments.com/auth/my-account/api" target="_blank">EU</a>).'),
-      '#default_value' => $config->get('tenant_id'),
+      '#config_target' => 'fastcomments.settings:tenant_id',
       '#required' => TRUE,
     ];
 
@@ -43,7 +41,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('API Secret'),
       '#description' => $this->t('Your FastComments API Secret. Required for Secure SSO, webhook verification, and page sync. Find this under <a href="https://fastcomments.com/auth/my-account/api" target="_blank">Settings &gt; API/SSO</a> (or <a href="https://eu.fastcomments.com/auth/my-account/api" target="_blank">EU</a>).'),
-      '#default_value' => $config->get('api_secret'),
+      '#config_target' => 'fastcomments.settings:api_secret',
     ];
 
     $form['sso_mode'] = [
@@ -55,7 +53,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
         'simple' => $this->t('Simple'),
         'secure' => $this->t('Secure'),
       ],
-      '#default_value' => $config->get('sso_mode'),
+      '#config_target' => 'fastcomments.settings:sso_mode',
     ];
 
     $form['commenting_style'] = [
@@ -68,14 +66,14 @@ class FastCommentsSettingsForm extends ConfigFormBase {
         'collabchat' => $this->t('Collab Chat'),
         'collabchat_comments' => $this->t('Collab Chat + Comments'),
       ],
-      '#default_value' => $config->get('commenting_style'),
+      '#config_target' => 'fastcomments.settings:commenting_style',
     ];
 
     $form['cdn_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('CDN URL'),
       '#description' => $this->t('FastComments CDN URL. For EU data residency, use https://cdn-eu.fastcomments.com'),
-      '#default_value' => $config->get('cdn_url'),
+      '#config_target' => 'fastcomments.settings:cdn_url',
       '#required' => TRUE,
     ];
 
@@ -83,7 +81,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Site URL'),
       '#description' => $this->t('FastComments site URL. For EU data residency, use https://eu.fastcomments.com'),
-      '#default_value' => $config->get('site_url'),
+      '#config_target' => 'fastcomments.settings:site_url',
       '#required' => TRUE,
     ];
 
@@ -91,7 +89,7 @@ class FastCommentsSettingsForm extends ConfigFormBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Email notifications'),
       '#description' => $this->t('Send an email to content authors when a new comment is posted on their content.'),
-      '#default_value' => $config->get('email_notifications'),
+      '#config_target' => 'fastcomments.settings:email_notifications',
     ];
 
     $webhookUrl = Url::fromRoute('fastcomments.webhook', [], ['absolute' => TRUE])->toString();
@@ -117,23 +115,6 @@ class FastCommentsSettingsForm extends ConfigFormBase {
     if ($form_state->getValue('sso_mode') === 'secure' && empty($form_state->getValue('api_secret'))) {
       $form_state->setErrorByName('api_secret', $this->t('API Secret is required when SSO Mode is set to "Secure".'));
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('fastcomments.settings')
-      ->set('tenant_id', $form_state->getValue('tenant_id'))
-      ->set('api_secret', $form_state->getValue('api_secret'))
-      ->set('sso_mode', $form_state->getValue('sso_mode'))
-      ->set('commenting_style', $form_state->getValue('commenting_style'))
-      ->set('cdn_url', $form_state->getValue('cdn_url'))
-      ->set('site_url', $form_state->getValue('site_url'))
-      ->set('email_notifications', (bool) $form_state->getValue('email_notifications'))
-      ->save();
-
-    parent::submitForm($form, $form_state);
   }
 
 }

@@ -3,38 +3,25 @@
 namespace Drupal\fastcomments\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'fastcomments_comment' formatter.
- *
- * @FieldFormatter(
- *   id = "fastcomments_comment",
- *   label = @Translation("FastComments Widget"),
- *   field_types = {"fastcomments_comment"},
- * )
  */
+#[FieldFormatter(
+  id: 'fastcomments_comment',
+  label: new TranslatableMarkup('FastComments Widget'),
+  field_types: ['fastcomments_comment'],
+)]
 class FastCommentsFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
-   */
-  protected AccountProxyInterface $currentUser;
-
-  /**
-   * The config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected ConfigFactoryInterface $configFactory;
 
   /**
    * Constructs a FastCommentsFormatter.
@@ -47,12 +34,10 @@ class FastCommentsFormatter extends FormatterBase implements ContainerFactoryPlu
     $label,
     $view_mode,
     array $third_party_settings,
-    AccountProxyInterface $current_user,
-    ConfigFactoryInterface $config_factory,
+    protected AccountProxyInterface $currentUser,
+    protected ConfigFactoryInterface $configFactory,
   ) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
-    $this->currentUser = $current_user;
-    $this->configFactory = $config_factory;
   }
 
   /**
