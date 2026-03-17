@@ -2,5 +2,87 @@
 
 /**
  * @file
- * Hook implementations for the FastComments module.
+ * Legacy hook shims for Drupal 10.x compatibility.
+ *
+ * On Drupal 11.1+, the #[Hook] attributes in
+ * \Drupal\fastcomments\Hook\FastCommentsHooks are used directly and these
+ * procedural functions are skipped thanks to #[LegacyHook].
+ *
+ * @see \Drupal\fastcomments\Hook\FastCommentsHooks
  */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\fastcomments\Hook\FastCommentsHooks;
+
+/**
+ * Implements hook_help().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_help($route_name, RouteMatchInterface $route_match) {
+  return \Drupal::service(FastCommentsHooks::class)->help($route_name, $route_match);
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_theme(): array {
+  return \Drupal::service(FastCommentsHooks::class)->theme();
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_entity_extra_field_info(): array {
+  return \Drupal::service(FastCommentsHooks::class)->entityExtraFieldInfo();
+}
+
+/**
+ * Implements hook_entity_view().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode): void {
+  \Drupal::service(FastCommentsHooks::class)->entityView($build, $entity, $display, $view_mode);
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_entity_update(EntityInterface $entity): void {
+  \Drupal::service(FastCommentsHooks::class)->entityUpdate($entity);
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_entity_delete(EntityInterface $entity): void {
+  \Drupal::service(FastCommentsHooks::class)->entityDelete($entity);
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * @phpstan-ignore-next-line
+ */
+#[LegacyHook]
+function fastcomments_mail($key, &$message, $params): void {
+  \Drupal::service(FastCommentsHooks::class)->mail($key, $message, $params);
+}

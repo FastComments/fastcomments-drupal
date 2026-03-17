@@ -1,7 +1,7 @@
 services:
-  fastcomments.hooks:
+  Drupal\fastcomments\Hook\FastCommentsHooks:
     class: Drupal\fastcomments\Hook\FastCommentsHooks
-    arguments: ['@entity_field.manager', '@config.factory', '@fastcomments.api_client']
+    autowire: true
   logger.channel.fastcomments:
     parent: logger.channel_base
     arguments: ['fastcomments']
@@ -14,3 +14,4 @@ services:
   fastcomments.api_client:
     class: Drupal\fastcomments\Service\FastCommentsApiClient
     arguments: ['@http_client', '@config.factory', '@logger.channel.fastcomments']
+  Drupal\fastcomments\Service\FastCommentsApiClient: '@fastcomments.api_client'
