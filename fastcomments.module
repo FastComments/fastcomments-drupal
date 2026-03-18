@@ -2,11 +2,11 @@
 
 /**
  * @file
- * Legacy hook shims for Drupal 10.x compatibility.
+ * Legacy hook shims for compatibility with procedural hook discovery.
  *
- * On Drupal 11.1+, the #[Hook] attributes in
- * \Drupal\fastcomments\Hook\FastCommentsHooks are used directly and these
- * procedural functions are skipped thanks to #[LegacyHook].
+ * The primary hook implementations live in
+ * \Drupal\fastcomments\Hook\FastCommentsHooks. These wrappers delegate to that
+ * service and are marked with #[LegacyHook] for compatibility.
  *
  * @see \Drupal\fastcomments\Hook\FastCommentsHooks
  */
