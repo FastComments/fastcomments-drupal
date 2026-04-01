@@ -135,7 +135,11 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
     $identifier = 'drupal-' . $entity->getEntityTypeId() . '-' . $entity->id();
     $url = '';
     if ($entity->hasLinkTemplate('canonical')) {
-      $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+      try {
+        $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+      }
+      catch (\Drupal\Core\Entity\EntityMalformedException $e) {
+      }
     }
 
     return [

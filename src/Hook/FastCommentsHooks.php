@@ -188,7 +188,11 @@ class FastCommentsHooks {
 
     $data = ['title' => $entity->label()];
     if ($entity->hasLinkTemplate('canonical')) {
-      $data['url'] = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+      try {
+        $data['url'] = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+      }
+      catch (\Drupal\Core\Entity\EntityMalformedException $e) {
+      }
     }
 
     $this->apiClient->updatePage($page['id'], $data);

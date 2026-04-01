@@ -153,7 +153,11 @@ class FastCommentsFormatter extends FormatterBase implements ContainerFactoryPlu
     // Build URL.
     $url = '';
     if ($entity->hasLinkTemplate('canonical')) {
-      $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+      try {
+        $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+      }
+      catch (\Drupal\Core\Entity\EntityMalformedException $e) {
+      }
     }
 
     // Use formatter setting if set, otherwise fall back to global config.
