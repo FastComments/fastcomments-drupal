@@ -103,7 +103,7 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
       '#theme' => 'fastcomments_simple_widget',
       '#widget_element_id' => $widget_element_id,
       '#config_json' => $config_json,
-      '#init_function' => 'FastCommentsRecentComments',
+      '#init_function' => 'FastCommentsRecentCommentsV2',
       '#attached' => [
         'library' => ['fastcomments/styling'],
         'html_head' => [
@@ -112,7 +112,7 @@ class FastCommentsRecentCommentsBlock extends BlockBase implements ContainerFact
               '#type' => 'html_tag',
               '#tag' => 'script',
               '#attributes' => [
-                'src' => $cdn_url . '/js/widget-recent-comments.min.js',
+                'src' => $cdn_url . '/js/widget-recent-comments-v2.min.js',
               ],
             ],
             'fastcomments_cdn_script_recent_comments',
