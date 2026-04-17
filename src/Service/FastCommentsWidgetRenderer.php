@@ -4,6 +4,7 @@ namespace Drupal\fastcomments\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Security\TrustedCallbackInterface;
 
@@ -138,7 +139,7 @@ class FastCommentsWidgetRenderer implements TrustedCallbackInterface {
       try {
         $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
       }
-      catch (\Drupal\Core\Entity\EntityMalformedException $e) {
+      catch (EntityMalformedException $e) {
       }
     }
 

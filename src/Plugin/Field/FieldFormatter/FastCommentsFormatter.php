@@ -3,6 +3,7 @@
 namespace Drupal\fastcomments\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityMalformedException;
 use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
@@ -156,7 +157,7 @@ class FastCommentsFormatter extends FormatterBase implements ContainerFactoryPlu
       try {
         $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
       }
-      catch (\Drupal\Core\Entity\EntityMalformedException $e) {
+      catch (EntityMalformedException $e) {
       }
     }
 
